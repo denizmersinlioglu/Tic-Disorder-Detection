@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/Users/DenizMersinlioglu/.pyenv/versions/3.7.2/bin/python",
+    "python.pythonPath": "/Users/DenizMersinlioglu/.local/share/virtualenvs/data_read-rHGJusMr/bin/python",
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.formatting.provider": "yapf"
