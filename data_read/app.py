@@ -1,76 +1,62 @@
-from tkinter import *
-from random import randint
+import sys, argparse
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import numpy as np
+from SerialPlot import SerialPlot
+from pyqtgraph.ptime import time
+from pyqtgraph.Qt import QtGui, QtCore
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout
+from PyQt5.QtCore import pyqtSlot
+from dtw import dtw
+import pyqtgraph as pg
+# x = np.array([2, 0, 1, 1, 2, 4, 2, 1, 2, 0]).reshape(-1, 1)
+# y = np.array([1, 1, 2, 4, 2, 1, 2, 0]).reshape(-1, 1)
+# euclidean_norm = lambda x, y: np.abs(x - y)
+# d, cost_matrix, acc_cost_matrix, path = dtw(x, y, dist=euclidean_norm)
+# print(d)
 
-# these two imports are important
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
-import time
-import threading
+app = QtGui.QApplication([])
 
-continuePlotting = False
+## Define a top-level widget to hold everything
+w = QtGui.QWidget()
+w.setWindowTitle('MPU9250 features acquisition')
+#w.resize(1366,768)
+wb = QtGui.QWidget(w)
+win = pg.GraphicsWindow()
 
-
-def change_state():
-    global continuePlotting
-    if continuePlotting == True:
-        continuePlotting = False
-    else:
-        continuePlotting = True
-
-
-def data_points():
-    f = open("data.txt", "w")
-    for i in range(10):
-        f.write(str(randint(0, 10)) + '\n')
-    f.close()
-
-    f = open("data.txt", "r")
-    data = f.readlines()
-    f.close()
-
-    l = []
-    for i in range(len(data)):
-        l.append(int(data[i].rstrip("\n")))
-    return l
+left_layout = QVBoxLayout()
+saveButton = QPushButton('Save')
+left_layout.addWidget(saveButton)
+left_layout.addWidget(QPushButton('Bottom'))
+wb.setLayout(left_layout)
+layout = QHBoxLayout()
+layout.addWidget(wb)
+layout.addWidget(win)
+# win.setFrameStyle(2)
+w.setLayout(layout)
 
 
-def app():
-    # initialise a window.
-    root = Tk()
-    root.config(background='white')
-    root.geometry("1000x700")
+@pyqtSlot()
+def on_click():
+    print('PyQt5 button click')
 
-    Label(root, text="Live Plotting", bg='white').pack()
 
-    fig = Figure()
+saveButton.clicked.connect(on_click)
 
-    ax = fig.add_subplot(111)
-    ax.set_xlabel("X axis")
-    ax.set_ylabel("Y axis")
-    ax.grid()
+p_main = win.addPlot()
 
-    graph = FigureCanvasTkAgg(fig, master=root)
-    graph.get_tk_widget().pack(side="top", fill='both', expand=True)
+strPort = '/dev/cu.SLAB_USBtoUART'
+baudRate = 19200
+p_main.setMenuEnabled(False)
+serial_plot = SerialPlot(strPort, baudRate, app, p_main, 127)
 
-    def plotter():
-        while continuePlotting:
-            ax.cla()
-            ax.grid()
-            dpts = data_points()
-            ax.plot(range(10), dpts, marker='o', color='orange')
-            graph.draw()
-            time.sleep(1)
+w.show()
 
-    def gui_handler():
-        change_state()
-        threading.Thread(target=plotter).start()
-
-    b = Button(
-        root, text="Start/Stop", command=gui_handler, bg="red", fg="white")
-    b.pack()
-
-    root.mainloop()
-
+timer = QtCore.QTimer()
+timer.timeout.connect(serial_plot.update)
+timer.start(0)
 
 if __name__ == '__main__':
-    app()
+    import sys
+    if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
+        QtGui.QApplication.instance().exec_()
