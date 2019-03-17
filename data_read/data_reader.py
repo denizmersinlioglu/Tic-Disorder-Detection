@@ -43,7 +43,7 @@ def configureAx(lenght):
     a3, = ax.plot([], [], label='Gyro_X')
     a4, = ax.plot([], [], label='Gyro_Y')
     a5, = ax.plot([], [], label='Gyro_Z')
-    ax.legend(loc='upper right')
+    ax.legend(loc='upper left')
     legend = plt.legend(frameon=1)
     frame = legend.get_frame()
     frame.set_facecolor('black')
@@ -60,12 +60,11 @@ def main():
     print('Reading from serial port %s...' % strPort)
 
     fig = configureFig()
-    plot = SerialPlot(strPort, 80, fig)
+    plot = SerialPlot(strPort, 75, fig)
 
-    fargs = configureAx(80)
+    fargs = configureAx(75)
     print('Plotting data...')
-
-    _ = animation.FuncAnimation(fig, plot.update, fargs=fargs, interval=1)
+    _ = animation.FuncAnimation(fig, plot.update, fargs=fargs, interval=2)
 
     plt.show()
 

@@ -1,6 +1,14 @@
 import serial, re
 from collections import deque
 import datetime
+import pickle
+import csv
+
+
+def write_csv(data):
+    with open('data.csv', 'a') as outfile:
+        writer = csv.writer(outfile)
+        writer.writerow(data)
 
 
 class SerialPlot:
@@ -35,8 +43,8 @@ class SerialPlot:
         if len(buf) < self.maxLen:
             buf.append(val)
         else:
-            buf.pop()
-            buf.appendleft(val)
+            buf.popleft()
+            buf.append(val)
 
     # add data
     def add(self, data):
@@ -51,12 +59,10 @@ class SerialPlot:
     # update plot
     def update(self, frameNum, a0, a1, a2, a3, a4, a5):
         try:
-            line = self.ser.readline()
-            data_str = re.findall(r"[-+]?\d*\.\d+|\d+", str(line))
-            data = [float(val) for val in data_str]
-            print(self.is_recording)
+            line = str(self.ser.readline(), 'utf-8').split("\t")
+            data = [float(i) for i in line]
             if self.is_recording:
-                print("Record data for training")
+                write_csv(data)
             if (len(data) == 6):
                 self.add(data)
                 a0.set_data(range(self.maxLen), self.accel_x)
@@ -66,8 +72,8 @@ class SerialPlot:
                 a4.set_data(range(self.maxLen), self.gyro_y)
                 a5.set_data(range(self.maxLen), self.gyro_z)
 
-        except:
-            print('An error occured')
+        except Exception as e:
+            print(e)
 
         return a0,
 
