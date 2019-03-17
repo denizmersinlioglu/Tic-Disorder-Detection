@@ -11,11 +11,11 @@ def write_csv(data):
         writer.writerow(data)
 
 
-class SerialPlot:
+class SerialPort:
     # constr
     def __init__(self, strPort, maxLen, fig):
         # open serial port
-        self.ser = serial.Serial(port=strPort, baudrate=9600)
+        self.ser = serial.Serial(port=strPort, baudrate=19200)
         self.is_recording = False
         self.accel_x = deque([0.0] * maxLen)
         self.accel_y = deque([0.0] * maxLen)

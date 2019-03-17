@@ -8,7 +8,7 @@ int status;
 void setup()
 {
   // serial to display data
-  Serial.begin(9600);
+  Serial.begin(19200);
   while (!Serial)
   {
   }
@@ -32,17 +32,17 @@ void loop()
   // read the sensor
   IMU.readSensor();
   // display the data
-  Serial.print(IMU.getAccelX_mss(), 6);
+  Serial.print(IMU.getAccelX_mss(), 4);
   Serial.print("\t");
-  Serial.print(IMU.getAccelY_mss(), 6);
+  Serial.print(IMU.getAccelY_mss(), 4);
   Serial.print("\t");
-  Serial.print(IMU.getAccelZ_mss(), 6);
+  Serial.print(IMU.getAccelZ_mss(), 4);
   Serial.print("\t");
-  Serial.print(IMU.getGyroX_rads(), 6);
+  Serial.print(IMU.getGyroX_rads(), 4);
   Serial.print("\t");
-  Serial.print(IMU.getGyroY_rads(), 6);
+  Serial.print(IMU.getGyroY_rads(), 4);
   Serial.print("\t");
-  Serial.print(IMU.getGyroZ_rads(), 6);
+  Serial.print(IMU.getGyroZ_rads(), 4);
   Serial.print("\n");
   // Serial.print(IMU.getMagX_uT(), 6);
   // Serial.print("\t");
@@ -51,5 +51,5 @@ void loop()
   // Serial.print(IMU.getMagZ_uT(), 6);
   // Serial.print("\t");
   // Serial.println(IMU.getTemperature_C(), 6);
-  delay(20);
+  delay(15);
 }
