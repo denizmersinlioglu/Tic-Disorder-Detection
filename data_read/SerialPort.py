@@ -1,13 +1,14 @@
 import serial, re
 from collections import deque
+import datetime
 
 
 class SerialPlot:
     # constr
-    def __init__(self, strPort, maxLen):
+    def __init__(self, strPort, maxLen, fig):
         # open serial port
         self.ser = serial.Serial(port=strPort, baudrate=9600)
-
+        self.is_recording = False
         self.accel_x = deque([0.0] * maxLen)
         self.accel_y = deque([0.0] * maxLen)
         self.accel_z = deque([0.0] * maxLen)
@@ -15,6 +16,19 @@ class SerialPlot:
         self.gyro_y = deque([0.0] * maxLen)
         self.gyro_z = deque([0.0] * maxLen)
         self.maxLen = maxLen
+
+        self.cid_press = fig.canvas.mpl_connect('key_press_event',
+                                                self.key_press)
+        self.cid_release = fig.canvas.mpl_connect('key_release_event',
+                                                  self.key_release)
+
+    def key_press(self, event):
+        self.is_recording = True
+        # print('you pressed', event.key, event.xdata, event.ydata)
+
+    def key_release(self, event):
+        self.is_recording = False
+        # print('you released', event.key, event.xdata, event.ydata)
 
     # add to buffer
     def addToBuf(self, buf, val):
@@ -40,6 +54,9 @@ class SerialPlot:
             line = self.ser.readline()
             data_str = re.findall(r"[-+]?\d*\.\d+|\d+", str(line))
             data = [float(val) for val in data_str]
+            print(self.is_recording)
+            if self.is_recording:
+                print("Record data for training")
             if (len(data) == 6):
                 self.add(data)
                 a0.set_data(range(self.maxLen), self.accel_x)
@@ -48,10 +65,9 @@ class SerialPlot:
                 a3.set_data(range(self.maxLen), self.gyro_x)
                 a4.set_data(range(self.maxLen), self.gyro_y)
                 a5.set_data(range(self.maxLen), self.gyro_z)
-            else:
-                print("Update doesn't used")
-        except KeyboardInterrupt:
-            print('exiting')
+
+        except:
+            print('An error occured')
 
         return a0,
 

@@ -1,19 +1,19 @@
 import sys, argparse
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-
 import numpy as np
-from SerialPort import SerialPlot
-from hmmlearn import hmm
-from pynput.keyboard import Key, Listener
 
-# np.random.seed(42)
-# model = hmm.GaussianHMM(n_components=3, covariance_type="full")
-# model.startprob_ = np.array([0.6, 0.3, 0.1])
-# model.transmat_ = np.array([[0.7, 0.2, 0.1], [0.3, 0.5, 0.2], [0.3, 0.3, 0.4]])
-# model.means_ = np.array([[0.0, 0.0], [3.0, -3.0], [5.0, 10.0]])
-# model.covars_ = np.tile(np.identity(2), (3, 1, 1))
-# X, Z = model.sample(100)
+from SerialPort import SerialPlot
+from pynput.keyboard import Key, Listener
+from dtw import dtw
+
+x = np.array([2, 0, 1, 1, 2, 4, 2, 1, 2, 0]).reshape(-1, 1)
+y = np.array([1, 1, 2, 4, 2, 1, 2, 0]).reshape(-1, 1)
+
+euclidean_norm = lambda x, y: np.abs(x - y)
+
+d, cost_matrix, acc_cost_matrix, path = dtw(x, y, dist=euclidean_norm)
+print(d)
 
 
 def configureFig():
@@ -26,16 +26,6 @@ def configureFig():
     plt.rcParams['ytick.color'] = COLOR
     fig = plt.figure(figsize=(12, 6))
     fig.set_facecolor("black")
-
-    def key_press_event(event):
-        print('you pressed', event.key, event.xdata, event.ydata)
-
-    def key_release_event(event):
-        print('you released', event.key, event.xdata, event.ydata)
-
-    cid_press = fig.canvas.mpl_connect('key_press_event', key_press_event)
-    cid_release = fig.canvas.mpl_connect('key_release_event',
-                                         key_release_event)
 
     return fig
 
@@ -69,16 +59,17 @@ def main():
     strPort = '/dev/cu.SLAB_USBtoUART'
     print('Reading from serial port %s...' % strPort)
 
-    serialPlot = SerialPlot(strPort, 80)
     fig = configureFig()
+    plot = SerialPlot(strPort, 80, fig)
+
     fargs = configureAx(80)
     print('Plotting data...')
 
-    _ = animation.FuncAnimation(
-        fig, serialPlot.update, fargs=fargs, interval=10)
+    _ = animation.FuncAnimation(fig, plot.update, fargs=fargs, interval=1)
+
     plt.show()
 
-    serialPlot.close()
+    plot.close()
     print("Serial port closed safely")
     print('Exiting...')
 
