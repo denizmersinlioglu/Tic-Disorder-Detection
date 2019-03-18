@@ -20,20 +20,41 @@ app = QtGui.QApplication([])
 ## Define a top-level widget to hold everything
 w = QtGui.QWidget()
 w.setWindowTitle('MPU9250 features acquisition')
+main_layout = QVBoxLayout()
+
 #w.resize(1366,768)
 wb = QtGui.QWidget(w)
-win = pg.GraphicsWindow()
-
-left_layout = QVBoxLayout()
+button_layout = QVBoxLayout()
 saveButton = QPushButton('Save')
-left_layout.addWidget(saveButton)
-left_layout.addWidget(QPushButton('Bottom'))
-wb.setLayout(left_layout)
-layout = QHBoxLayout()
-layout.addWidget(wb)
-layout.addWidget(win)
+saveButton.setFixedHeight(50)
+button_layout.addWidget(saveButton)
+# button_layout.addWidget(QPushButton('Bottom'))
+wb.setLayout(button_layout)
+
+wsg_container = QtGui.QWidget(w)
+wsg_container_layout = QHBoxLayout()
+
+# Windows of Saved Graph
+wsg1 = pg.GraphicsWindow()
+wsg1.resize(100, 200)
+wsg_container_layout.addWidget(wsg1)
+wsg2 = pg.GraphicsWindow()
+wsg2.resize(100, 200)
+wsg_container_layout.addWidget(wsg2)
+wsg3 = pg.GraphicsWindow()
+wsg3.resize(100, 200)
+wsg_container_layout.addWidget(wsg3)
+wsg_container.setLayout(wsg_container_layout)
+
+win = pg.GraphicsWindow()
+win.resize(1000, 400)
+
+main_layout.addWidget(win)
+main_layout.addWidget(wb)
+main_layout.addWidget(wsg_container)
+
 # win.setFrameStyle(2)
-w.setLayout(layout)
+w.setLayout(main_layout)
 
 
 @pyqtSlot()
@@ -57,6 +78,5 @@ timer.timeout.connect(serial_plot.update)
 timer.start(0)
 
 if __name__ == '__main__':
-    import sys
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
         QtGui.QApplication.instance().exec_()
