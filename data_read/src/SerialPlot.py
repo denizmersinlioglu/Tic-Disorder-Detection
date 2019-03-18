@@ -1,19 +1,22 @@
-from pyqtgraph.Qt import QtGui, QtCore
-import numpy as np
 import pyqtgraph as pg
-from pyqtgraph.ptime import time
-import sys
 import serial
 from collections import deque
+import csv
+import pyqtgraph as pg
 
 
-class SerialPlot:
-    def __init__(self, port, baudRate, app, plot, maxLen):
+class SerialPlot(pg.GraphicsWindow):
+    def __init__(self, port, baudRate, app, maxLen):
+        super(SerialPlot, self).__init__()
+        self.resize(1200, 400)
         self.app = app
         self.maxLen = maxLen
         self.bytecount = 300  # This variable sets the number of bytes to read in
         self.cnt = 0
-        self.p = plot
+        self.is_recording = False
+        self.directory = ""
+        self.is_detecting = False
+        self.p = self.addPlot()
         self.p.setYRange(-30, 30, padding=0)
         self.p.setXRange(0, maxLen, padding=0)
         # self.p.setInteractive(False)
@@ -36,6 +39,7 @@ class SerialPlot:
         self.data3 = deque([0.0] * maxLen)
         self.data4 = deque([0.0] * maxLen)
         self.data5 = deque([0.0] * maxLen)
+        self.total_data = deque([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]] * maxLen)
 
         self.ser = serial.Serial(port, baudRate, timeout=1)
         self.ser.close()
@@ -43,6 +47,11 @@ class SerialPlot:
 
         print('Opening', self.ser.name)
         print('Reading Serial port =', self.bytecount, 'bytes')
+
+    def write_csv(self, data):
+        with open(self.directory, 'a+') as outfile:
+            writer = csv.writer(outfile)
+            writer.writerow(data)
 
     def addToBuf(self, buf, val):
         if len(buf) < self.maxLen:
@@ -55,6 +64,11 @@ class SerialPlot:
         try:
             line = str(self.ser.readline(), 'utf-8').split("\t")
             data = [float(i) for i in line]
+
+            if self.is_recording:
+                self.write_csv(data)
+
+            self.addToBuf(self.total_data, data)
             self.addToBuf(self.data0, data[0])
             self.addToBuf(self.data1, data[1])
             self.addToBuf(self.data2, data[2])
