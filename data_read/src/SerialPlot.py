@@ -3,6 +3,8 @@ import serial
 from collections import deque
 import csv
 import pyqtgraph as pg
+import numpy as np
+from DTW import DTW
 
 
 class SerialPlot(pg.GraphicsWindow):
@@ -15,7 +17,6 @@ class SerialPlot(pg.GraphicsWindow):
         self.cnt = 0
         self.is_recording = False
         self.directory = ""
-        self.is_detecting = False
         self.p = self.addPlot()
         self.p.setYRange(-30, 30, padding=0)
         self.p.setXRange(0, maxLen, padding=0)
@@ -44,14 +45,36 @@ class SerialPlot(pg.GraphicsWindow):
         self.ser = serial.Serial(port, baudRate, timeout=1)
         self.ser.close()
         self.ser.open()
-
+        self.record_buffer = []
         print('Opening', self.ser.name)
         print('Reading Serial port =', self.bytecount, 'bytes')
 
-    def write_csv(self, data):
-        with open(self.directory, 'a+') as outfile:
+    def write_csv(self):
+        gradient = np.gradient(
+            np.array(self.record_buffer, dtype=float), axis=0)
+        norm = ([np.linalg.norm(i) for i in gradient])
+        first_index = next(x[0] for x in enumerate(norm) if x[1] >= 1)
+        last_index = len(norm) - next(
+            x[0] for x in enumerate(reversed(norm)) if x[1] >= 1)
+        recording_data = self.record_buffer[first_index:last_index]
+        with open(self.directory, 'w') as outfile:
             writer = csv.writer(outfile)
-            writer.writerow(data)
+            for row in recording_data:
+                writer.writerow(row)
+
+    def calculate_dtw(self, plotter):
+        dtw = DTW()
+        gradient = dtw.calculate_gradient(self.total_data)
+        norm = list(reversed([np.linalg.norm(i) for i in gradient]))
+        first_index = next(x[0] for x in enumerate(norm) if x[1] >= 1)
+        sub_norm = norm[first_index + 1:]
+        last_sub_index = next(x[0] for x in enumerate(sub_norm) if x[1] <= 1)
+        last_index = norm.index(sub_norm[last_sub_index])
+        np_total_data = np.array(list(reversed(self.total_data)))
+        gesture = list(reversed(np_total_data[first_index:last_index]))
+        distance = dtw.dtw_distance(gesture, '../data/data490.csv')
+        print(distance)
+        plotter.update_data(gesture)
 
     def addToBuf(self, buf, val):
         if len(buf) < self.maxLen:
@@ -66,7 +89,7 @@ class SerialPlot(pg.GraphicsWindow):
             data = [float(i) for i in line]
 
             if self.is_recording:
-                self.write_csv(data)
+                self.record_buffer.append(data)
 
             self.addToBuf(self.total_data, data)
             self.addToBuf(self.data0, data[0])

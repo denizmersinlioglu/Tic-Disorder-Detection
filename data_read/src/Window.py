@@ -1,13 +1,13 @@
 import csv
 import threading
 
-from DTW import dtw_distance
+from DTW import DTW
 from SerialPlot import SerialPlot
 from DataPlotter import DataPlotter
 from pyqtgraph.Qt import QtGui, QtCore
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout
-
+import numpy as np
 strPort = '/dev/cu.SLAB_USBtoUART'
 baudRate = 19200
 
@@ -66,6 +66,7 @@ class Window(QtGui.QWidget):
             (offset, element, _) = self.get_dir_params(event.key())
             if not self.serial_plot.is_recording:
                 self.serial_plot.is_recording = True
+                self.serial_plot.record_buffer = []
                 count = len(self.record_dir[offset])
                 _dir = "../data/data{0}{1}.csv".format(element, count)
                 if _dir not in self.record_dir[offset]:
@@ -78,6 +79,7 @@ class Window(QtGui.QWidget):
         try:
             (offset, _, plotter) = self.get_dir_params(event.key())
             self.serial_plot.is_recording = False
+            self.serial_plot.write_csv()
             _dir = self.record_dir[offset][-1]
             plotter.plot_data_from(_dir)
         except Exception as e:
@@ -85,9 +87,9 @@ class Window(QtGui.QWidget):
 
     @pyqtSlot()
     def on_click(self):
-        thread = threading.Thread(
-            target=dtw_distance, args=(self.serial_plot.total_data, ))
-        thread.daemon = True  # Daemonize thread
-        thread.start()
-        # self.serial_plot.is_detecting = True
+        self.serial_plot.calculate_dtw(self.fourth_gesture)
+        # thread = threading.Thread(
+        #     target=, args=)
+        # thread.daemon = True  # Daemonize thread
+        # thread.start()
         print('PyQt5 button click')
