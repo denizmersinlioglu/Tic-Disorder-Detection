@@ -5,12 +5,16 @@ import csv
 import pyqtgraph as pg
 import numpy as np
 from DTW import DTW
+from scipy import signal
+import threading
+import time
 
 
 class SerialPlot(pg.GraphicsWindow):
-    def __init__(self, port, baudRate, app, maxLen):
+    def __init__(self, port, baudRate, app, maxLen, gesture_plotter):
         super(SerialPlot, self).__init__()
         self.resize(1200, 400)
+        self.gesture_plotter = gesture_plotter
         self.app = app
         self.maxLen = maxLen
         self.bytecount = 300  # This variable sets the number of bytes to read in
@@ -48,10 +52,15 @@ class SerialPlot(pg.GraphicsWindow):
         self.record_buffer = []
         print('Opening', self.ser.name)
         print('Reading Serial port =', self.bytecount, 'bytes')
+        thread = threading.Thread(
+            target=self.check_gesture, args=())
+        thread.daemon = True  # Daemonize thread
+        thread.start()
 
     def write_csv(self):
+        smoothed = DTW().smooth_data(self.record_buffer)
         gradient = np.gradient(
-            np.array(self.record_buffer, dtype=float), axis=0)
+            np.array(smoothed, dtype=float), axis=0)
         norm = ([np.linalg.norm(i) for i in gradient])
         first_index = next(x[0] for x in enumerate(norm) if x[1] >= 1)
         last_index = len(norm) - next(
@@ -62,19 +71,29 @@ class SerialPlot(pg.GraphicsWindow):
             for row in recording_data:
                 writer.writerow(row)
 
-    def calculate_dtw(self, plotter):
+    def get_active_gesture(self):
         dtw = DTW()
-        gradient = dtw.calculate_gradient(self.total_data)
+        smoothed = dtw.smooth_data(self.total_data)
+        gradient = dtw.calculate_gradient(smoothed)
         norm = list(reversed([np.linalg.norm(i) for i in gradient]))
-        first_index = next(x[0] for x in enumerate(norm) if x[1] >= 1)
+        first_index = next((x[0] for x in enumerate(norm) if x[1] >= 1.5), None)
+        if first_index == None:
+            return (None, None, None)
         sub_norm = norm[first_index + 1:]
-        last_sub_index = next(x[0] for x in enumerate(sub_norm) if x[1] <= 1)
+        last_sub_index = next((x[0] for x in enumerate(sub_norm)
+                               if x[1] <= 0.5 and x[0] > 10), None)
+        if last_sub_index == None:
+            last_sub_index = len(sub_norm) - 1
         last_index = norm.index(sub_norm[last_sub_index])
         np_total_data = np.array(list(reversed(self.total_data)))
         gesture = list(reversed(np_total_data[first_index:last_index]))
-        distance = dtw.dtw_distance(gesture, '../data/data490.csv')
-        print(distance)
-        plotter.update_data(gesture)
+        return (gesture, first_index, last_index)
+
+    def dtw_distance(self):
+        (gesture, first_index, last_index) = self.get_active_gesture()
+        distance = DTW().dtw_distance(gesture, '../data/data490.csv')
+        self.gesture_plotter.update_data(gesture)
+        return distance
 
     def addToBuf(self, buf, val):
         if len(buf) < self.maxLen:
@@ -82,6 +101,14 @@ class SerialPlot(pg.GraphicsWindow):
         else:
             buf.popleft()
             buf.append(val)
+
+    def check_gesture(self):
+        while True:
+            time.sleep(0.1)
+            (gesture, first_index, last_index) = self.get_active_gesture()
+            if first_index != None and last_index != None:
+                distance = self.dtw_distance()
+                print(distance)
 
     def update(self):
         try:

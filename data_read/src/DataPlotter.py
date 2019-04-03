@@ -37,7 +37,8 @@ class DataPlotter(pg.GraphicsWindow):
         self.update_data(result)
 
     def update_data(self, data):
-        assert (len(data[0]) == 6)
+        if data == None or len(data[0]) != 6:
+            return
         self.p.setXRange(0, len(data), padding=0)
         self.plot0.setData([i[0] for i in data])
         self.plot1.setData([i[1] for i in data])

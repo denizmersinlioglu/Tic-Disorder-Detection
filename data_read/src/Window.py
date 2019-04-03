@@ -31,22 +31,23 @@ class Window(QtGui.QWidget):
         self.wsg_container_layout = QHBoxLayout()
         self.wsg_container.setLayout(self.wsg_container_layout)
 
-        self.serial_plot = SerialPlot(strPort, baudRate, app, 127)
+        self.first_gesture = DataPlotter()
+        self.second_gesture = DataPlotter()
+        self.third_gesture = DataPlotter()
+        self.fourth_gesture = DataPlotter()
 
+        self.serial_plot = SerialPlot(strPort, baudRate, app, 127, self.fourth_gesture)
         self.main_layout.addWidget(self.serial_plot)
         self.main_layout.addWidget(self.wb)
         self.main_layout.addWidget(self.wsg_container)
         self.setLayout(self.main_layout)
 
         self.saveButton.clicked.connect(self.on_click)
-        self.first_gesture = DataPlotter()
         self.wsg_container_layout.addWidget(self.first_gesture)
-        self.second_gesture = DataPlotter()
         self.wsg_container_layout.addWidget(self.second_gesture)
-        self.third_gesture = DataPlotter()
         self.wsg_container_layout.addWidget(self.third_gesture)
-        self.fourth_gesture = DataPlotter()
         self.wsg_container_layout.addWidget(self.fourth_gesture)
+
         self.show()
 
     def get_dir_params(self, key):
@@ -87,7 +88,7 @@ class Window(QtGui.QWidget):
 
     @pyqtSlot()
     def on_click(self):
-        self.serial_plot.calculate_dtw(self.fourth_gesture)
+        # self.serial_plot.dtw_distance(self.fourth_gesture)
         # thread = threading.Thread(
         #     target=, args=)
         # thread.daemon = True  # Daemonize thread
