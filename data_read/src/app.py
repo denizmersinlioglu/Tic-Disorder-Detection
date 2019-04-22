@@ -3,7 +3,7 @@ import os
 from Window import Window
 from pyqtgraph.Qt import QtGui, QtCore
 import threading
-from Dtw import check_gesture
+import GRT
 
 
 def clear_data():
@@ -26,6 +26,7 @@ def main():
     timer.timeout.connect(win.serial_plot.update)
     timer.start(0)
 
+    pipeline = GRT.GestureRecognitionPipeline()
     # thread = threading.Thread(
     #     target=check_gesture, args=(win.serial_plot.total_data,))
     # thread.daemon = True  # Daemonize thread

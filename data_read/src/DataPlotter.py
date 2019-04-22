@@ -1,6 +1,4 @@
 import csv
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout
-from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 
 
@@ -11,18 +9,18 @@ class DataPlotter(pg.GraphicsWindow):
         self.plotter = self.addPlot()
         self.plotter.padding = 0
         self.plotter.setYRange(-30, 30, padding=0)
-        self.plot0 = self.plotter.plot(
-            pen=pg.mkPen((255, 127, 14), width=1), name="Accel_X")
-        self.plot1 = self.plotter.plot(
-            pen=pg.mkPen((44, 160, 44), width=1), name="Accel_Y")
-        self.plot2 = self.plotter.plot(
-            pen=pg.mkPen((31, 119, 180), width=1), name="Accel_Z")
-        self.plot3 = self.plotter.plot(
-            pen=pg.mkPen((148, 103, 189), width=1), name="Gyro_X")
-        self.plot4 = self.plotter.plot(
-            pen=pg.mkPen((188, 189, 34), width=1), name="Gyro_Y")
-        self.plot5 = self.plotter.plot(
-            pen=pg.mkPen((140, 86, 75), width=1), name="Gyro_Z")
+        self.plot0 = self.plotter.plot(pen=pg.mkPen((255, 127, 14), width=1),
+                                       name="Accel_X")
+        self.plot1 = self.plotter.plot(pen=pg.mkPen((44, 160, 44), width=1),
+                                       name="Accel_Y")
+        self.plot2 = self.plotter.plot(pen=pg.mkPen((31, 119, 180), width=1),
+                                       name="Accel_Z")
+        self.plot3 = self.plotter.plot(pen=pg.mkPen((148, 103, 189), width=1),
+                                       name="Gyro_X")
+        self.plot4 = self.plotter.plot(pen=pg.mkPen((188, 189, 34), width=1),
+                                       name="Gyro_Y")
+        self.plot5 = self.plotter.plot(pen=pg.mkPen((140, 86, 75), width=1),
+                                       name="Gyro_Z")
 
     def read_csv(self, directory):
         result = []

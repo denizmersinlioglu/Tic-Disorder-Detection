@@ -25,18 +25,18 @@ class SerialPlot(pg.GraphicsWindow):
         self.p.setXRange(0, maxLen, padding=0)
         # self.p.setInteractive(False)
         self.p.addLegend()
-        self.plot0 = self.p.plot(
-            pen=pg.mkPen((255, 127, 14), width=3), name="Accel_X")
-        self.plot1 = self.p.plot(
-            pen=pg.mkPen((44, 160, 44), width=3), name="Accel_Y")
-        self.plot2 = self.p.plot(
-            pen=pg.mkPen((31, 119, 180), width=3), name="Accel_Z")
-        self.plot3 = self.p.plot(
-            pen=pg.mkPen((148, 103, 189), width=3), name="Gyro_X")
-        self.plot4 = self.p.plot(
-            pen=pg.mkPen((188, 189, 34), width=3), name="Gyro_Y")
-        self.plot5 = self.p.plot(
-            pen=pg.mkPen((140, 86, 75), width=3), name="Gyro_Z")
+        self.plot0 = self.p.plot(pen=pg.mkPen((255, 127, 14), width=3),
+                                 name="Accel_X")
+        self.plot1 = self.p.plot(pen=pg.mkPen((44, 160, 44), width=3),
+                                 name="Accel_Y")
+        self.plot2 = self.p.plot(pen=pg.mkPen((31, 119, 180), width=3),
+                                 name="Accel_Z")
+        self.plot3 = self.p.plot(pen=pg.mkPen((148, 103, 189), width=3),
+                                 name="Gyro_X")
+        self.plot4 = self.p.plot(pen=pg.mkPen((188, 189, 34), width=3),
+                                 name="Gyro_Y")
+        self.plot5 = self.p.plot(pen=pg.mkPen((140, 86, 75), width=3),
+                                 name="Gyro_Z")
         self.data0 = deque([0.0] * maxLen)
         self.data1 = deque([0.0] * maxLen)
         self.data2 = deque([0.0] * maxLen)

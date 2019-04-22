@@ -1,6 +1,5 @@
 import time
 import csv
-from fastdtw import fastdtw
 import numpy as np
 from scipy import signal
 
@@ -16,8 +15,9 @@ def smooth_data(data):
     if row_lenght > 0:
         for i in range(0, row_lenght):
             coloumn = np.array(data)[:, i]
-            smoothed_coloumn = signal.savgol_filter(
-                coloumn, SMOOTH_WINDOW_SIZE, SMOOTH_POLYNOMIAL)
+            smoothed_coloumn = signal.savgol_filter(coloumn,
+                                                    SMOOTH_WINDOW_SIZE,
+                                                    SMOOTH_POLYNOMIAL)
             if i == 0:
                 smoothed = smoothed_coloumn
             else:
