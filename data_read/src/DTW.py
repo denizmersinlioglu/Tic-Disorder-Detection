@@ -1,28 +1,6 @@
 import time
 import csv
 import numpy as np
-from scipy import signal
-
-KEY = 0
-MAIN_DIRECTORY = "../data"
-SMOOTH_WINDOW_SIZE = 5
-SMOOTH_POLYNOMIAL = 1
-
-
-def smooth_data(data):
-    smoothed = []
-    row_lenght = len(data[0])
-    if row_lenght > 0:
-        for i in range(0, row_lenght):
-            coloumn = np.array(data)[:, i]
-            smoothed_coloumn = signal.savgol_filter(coloumn,
-                                                    SMOOTH_WINDOW_SIZE,
-                                                    SMOOTH_POLYNOMIAL)
-            if i == 0:
-                smoothed = smoothed_coloumn
-            else:
-                smoothed = np.c_[smoothed, smoothed_coloumn]
-    return smoothed
 
 
 def calculate_gradient(data):
