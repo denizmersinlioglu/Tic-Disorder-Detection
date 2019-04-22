@@ -2,6 +2,8 @@ import sys
 import os
 from Window import Window
 from pyqtgraph.Qt import QtGui, QtCore
+import threading
+from Dtw import check_gesture
 
 
 def clear_data():
@@ -17,12 +19,18 @@ def clear_data():
 
 
 def main():
-    # clear_data()
+    clear_data()
     app = QtGui.QApplication(sys.argv)
     win = Window(app)
     timer = QtCore.QTimer()
     timer.timeout.connect(win.serial_plot.update)
     timer.start(0)
+
+    # thread = threading.Thread(
+    #     target=check_gesture, args=(win.serial_plot.total_data,))
+    # thread.daemon = True  # Daemonize thread
+    # thread.start()
+
     sys.exit(app.exec_())
 
 

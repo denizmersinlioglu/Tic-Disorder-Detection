@@ -1,13 +1,13 @@
-import csv
-import threading
-
-from DTW import DTW
-from SerialPlot import SerialPlot
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout
+from PyQt5.QtCore import pyqtSlot
 from DataPlotter import DataPlotter
 from pyqtgraph.Qt import QtGui, QtCore
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout
+from SerialPlot import SerialPlot
+
+import csv
+import threading
 import numpy as np
+
 strPort = '/dev/cu.SLAB_USBtoUART'
 baudRate = 19200
 
@@ -36,13 +36,14 @@ class Window(QtGui.QWidget):
         self.third_gesture = DataPlotter()
         self.fourth_gesture = DataPlotter()
 
-        self.serial_plot = SerialPlot(strPort, baudRate, app, 127, self.fourth_gesture)
+        self.serial_plot = SerialPlot(strPort, baudRate, app, 127,
+                                      self.fourth_gesture)
         self.main_layout.addWidget(self.serial_plot)
         self.main_layout.addWidget(self.wb)
         self.main_layout.addWidget(self.wsg_container)
         self.setLayout(self.main_layout)
 
-        self.saveButton.clicked.connect(self.on_click)
+        # self.saveButton.clicked.connect(self.on_click)
         self.wsg_container_layout.addWidget(self.first_gesture)
         self.wsg_container_layout.addWidget(self.second_gesture)
         self.wsg_container_layout.addWidget(self.third_gesture)
@@ -86,11 +87,11 @@ class Window(QtGui.QWidget):
         except Exception as e:
             print(e)
 
-    @pyqtSlot()
-    def on_click(self):
-        # self.serial_plot.dtw_distance(self.fourth_gesture)
-        # thread = threading.Thread(
-        #     target=, args=)
-        # thread.daemon = True  # Daemonize thread
-        # thread.start()
-        print('PyQt5 button click')
+    # @pyqtSlot()
+    # def on_click(self):
+    # self.serial_plot.dtw_distance(self.fourth_gesture)
+    # thread = threading.Thread(
+    #     target=, args=)
+    # thread.daemon = True  # Daemonize thread
+    # thread.start()
+    # print('PyQt5 button click')
