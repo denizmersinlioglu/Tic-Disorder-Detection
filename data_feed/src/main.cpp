@@ -6,15 +6,14 @@
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
 #endif
 
-// BluetoothSerial SerialBT;
-// an MPU9250 object with the MPU-9250 sensor on I2C bus 0 with address 0x68
+BluetoothSerial SerialBT;
 MPU9250 IMU(Wire, 0x68);
 int status;
 
 void setup()
 {
   Serial.begin(19200);
-  // SerialBT.begin("ESP32test"); //Bluetooth device name
+  SerialBT.begin("Tic Detector"); //Bluetooth device name
   Serial.println("The device started, now you can pair it with bluetooth!");
   status = IMU.begin();
 
@@ -37,19 +36,31 @@ void loop()
   IMU.readSensor();
   // Serial.print(SerialBT.available());
 
-  // Serial.print("Looped");
-  Serial.print(IMU.getAccelX_mss(), 4);
-  Serial.print("\t");
-  Serial.print(IMU.getAccelY_mss(), 4);
-  Serial.print("\t");
-  Serial.print(IMU.getAccelZ_mss(), 4);
-  Serial.print("\t");
-  Serial.print(IMU.getGyroX_rads(), 4);
-  Serial.print("\t");
-  Serial.print(IMU.getGyroY_rads(), 4);
-  Serial.print("\t");
-  Serial.print(IMU.getGyroZ_rads(), 4);
-  Serial.print("\n");
+  // Serial.print(IMU.getAccelX_mss(), 4);
+  // Serial.print("\t");
+  // Serial.print(IMU.getAccelY_mss(), 4);
+  // Serial.print("\t");
+  // Serial.print(IMU.getAccelZ_mss(), 4);
+  // Serial.print("\t");
+  // Serial.print(IMU.getGyroX_rads(), 4);
+  // Serial.print("\t");
+  // Serial.print(IMU.getGyroY_rads(), 4);
+  // Serial.print("\t");
+  // Serial.print(IMU.getGyroZ_rads(), 4);
+  // Serial.print("\n");
+  Serial.print("Looped");
+  SerialBT.print(IMU.getAccelX_mss(), 4);
+  SerialBT.print("\t");
+  SerialBT.print(IMU.getAccelY_mss(), 4);
+  SerialBT.print("\t");
+  SerialBT.print(IMU.getAccelZ_mss(), 4);
+  SerialBT.print("\t");
+  SerialBT.print(IMU.getGyroX_rads(), 4);
+  SerialBT.print("\t");
+  SerialBT.print(IMU.getGyroY_rads(), 4);
+  SerialBT.print("\t");
+  SerialBT.print(IMU.getGyroZ_rads(), 4);
+  SerialBT.print("\n");
 
   delay(38);
 }

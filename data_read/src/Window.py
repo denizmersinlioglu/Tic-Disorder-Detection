@@ -15,21 +15,20 @@ class Window(QtGui.QWidget):
         self.button_layout = QVBoxLayout()
         self.window.setLayout(self.button_layout)
 
-        self.wsg_container = QtGui.QWidget(self)
-        self.wsg_container_layout = QHBoxLayout()
-        self.wsg_container.setLayout(self.wsg_container_layout)
+        self.gesture_layout = QHBoxLayout()
+        self.gesture_container = QtGui.QWidget(self)
+        self.gesture_container.setLayout(self.gesture_layout)
 
         self.data_plotters = [DataPlotter() for _ in range(4)]
+        for plotter in self.data_plotters:
+            self.gesture_layout.addWidget(plotter)
 
         self.serial_plot = SerialPlot(app, 127, serial)
         self.main_layout.addWidget(self.serial_plot)
         self.main_layout.addWidget(self.window)
-        self.main_layout.addWidget(self.wsg_container)
+        self.main_layout.addWidget(self.gesture_container)
+
         self.setLayout(self.main_layout)
-
-        for plotter in self.data_plotters:
-            self.wsg_container_layout.addWidget(plotter)
-
         self.show()
 
     def keyPressEvent(self, event):

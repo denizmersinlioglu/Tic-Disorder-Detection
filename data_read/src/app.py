@@ -6,7 +6,8 @@ import GRT
 from Window import Window
 from CustomThread import PredictionThread
 
-STR_PORT = '/dev/cu.SLAB_USBtoUART'
+# STR_PORT = '/dev/cu.SLAB_USBtoUART'
+STR_PORT = '/dev/cu.TicDetector-ESP32SPP'
 BAUDRATE = 19200
 
 
@@ -36,14 +37,7 @@ def main():
     app = QtGui.QApplication(sys.argv)
 
     # Open a serial port for serial plotter
-    ser = serial.Serial(STR_PORT,
-                        timeout=None,
-                        baudrate=BAUDRATE,
-                        xonxoff=False,
-                        rtscts=False,
-                        dsrdtr=False)
-    ser.close()
-    ser.open()
+    ser = serial.Serial(STR_PORT, timeout=None, baudrate=BAUDRATE)
     print('Opening', ser.name)
 
     # Initialize a window for application GUI
