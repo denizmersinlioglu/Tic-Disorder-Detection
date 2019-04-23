@@ -1,6 +1,6 @@
 {
     "terminal.integrated.env.osx": {
-        "PATH": "/Users/DenizMersinlioglu/.platformio/penv/bin:/Users/DenizMersinlioglu/.platformio/penv:/opt/local/bin:/opt/local/sbin:/Library/Frameworks/Python.framework/Versions/3.7/bin:/Users/DenizMersinlioglu/anaconda/bin:/Users/DenizMersinlioglu/anaconda2/bin:/Users/DenizMersinlioglu/anaconda/bin:/Users/DenizMersinlioglu/.rbenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:/Library/Frameworks/Mono.framework/Versions/Current/Commands",
+        "PATH": "/Users/DenizMersinlioglu/.platformio/penv/bin:/Users/DenizMersinlioglu/.platformio/penv:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:/Library/Frameworks/Mono.framework/Versions/Current/Commands",
         "PLATFORMIO_CALLER": "vscode"
     },
     "files.associations": {

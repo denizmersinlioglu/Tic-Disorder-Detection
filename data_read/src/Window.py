@@ -36,7 +36,8 @@ class Window(QtGui.QWidget):
         ''' Key Press Event for training Gesture '''
         try:
             key = event.key()
-            RecordHelper.getInstance().begin_recording(key)
+            if not RecordHelper.shared().is_recording:
+                RecordHelper.shared().begin_recording(key)
         except Exception as exception:
             print(exception)
 
@@ -44,8 +45,8 @@ class Window(QtGui.QWidget):
         ''' Key Release Event for training Gesture '''
         try:
             key = event.key()
-            (offset, _) = RecordHelper.getInstance().dir_params(key)
-            active_plotter = self.data_plotters[offset]
-            RecordHelper.getInstance().complete_recording(active_plotter)
+            index = RecordHelper.shared().dir_params(key)
+            active_plotter = self.data_plotters[index]
+            RecordHelper.shared().complete_recording(active_plotter)
         except Exception as exception:
             print(exception)

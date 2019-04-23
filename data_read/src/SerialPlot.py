@@ -1,8 +1,9 @@
 import pyqtgraph as pg
-from collections import deque
-import pyqtgraph as pg
 import numpy as np
+from collections import deque
 from RecordHelper import RecordHelper
+from DTWGestureRecognizer import DTWGestureRecognizer
+import concurrent.futures
 
 
 class SerialPlot(pg.GraphicsWindow):
@@ -12,8 +13,6 @@ class SerialPlot(pg.GraphicsWindow):
         self.app = app
         self.max_len = max_len
         self.serial = serial
-        self.is_recording = False
-        self.directory = ""
 
         plot = self.addPlot()
         plot.setYRange(-30, 30, padding=0)
@@ -37,18 +36,29 @@ class SerialPlot(pg.GraphicsWindow):
             buf.append(val)
 
     def update(self):
+        '''
+        Read the serial data and plot it
+        Recording handled by Record Helper 
+        '''
+        if not self.serial.in_waiting:
+            self.app.processEvents()
+            return
         try:
             line = str(self.serial.readline(), 'utf-8').split("\t")
             data = [float(i) for i in line]
 
-            if RecordHelper.getInstance().is_recording:
-                RecordHelper.getInstance().recording_buffer.append(data)
+            if RecordHelper.shared().is_recording:
+                RecordHelper.shared().recording_buffer.append(data)
+                DTWGestureRecognizer.shared().active_data = None
+            else:
+                DTWGestureRecognizer.shared().active_data = data
 
             for element in zip(self.current_data, data, self.plots):
-                self.addToBuf(element[0], element[1])
-                element[2].setData(element[0])
+                (buffer, datum, plot) = element
+                self.addToBuf(buffer, datum)
+                plot.setData(buffer)
 
             self.app.processEvents()
 
-        except Exception as e:
-            print(e)
+        except Exception as ex:
+            print(ex)

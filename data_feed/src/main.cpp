@@ -6,7 +6,7 @@
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
 #endif
 
-BluetoothSerial SerialBT;
+// BluetoothSerial SerialBT;
 // an MPU9250 object with the MPU-9250 sensor on I2C bus 0 with address 0x68
 MPU9250 IMU(Wire, 0x68);
 int status;
@@ -38,20 +38,20 @@ void loop()
   // Serial.print(SerialBT.available());
 
   // Serial.print("Looped");
-  Serial.print(IMU.getAccelX_mss(), 6);
+  Serial.print(IMU.getAccelX_mss(), 4);
   Serial.print("\t");
-  Serial.print(IMU.getAccelY_mss(), 6);
+  Serial.print(IMU.getAccelY_mss(), 4);
   Serial.print("\t");
-  Serial.print(IMU.getAccelZ_mss(), 6);
+  Serial.print(IMU.getAccelZ_mss(), 4);
   Serial.print("\t");
-  Serial.print(IMU.getGyroX_rads(), 6);
+  Serial.print(IMU.getGyroX_rads(), 4);
   Serial.print("\t");
-  Serial.print(IMU.getGyroY_rads(), 6);
+  Serial.print(IMU.getGyroY_rads(), 4);
   Serial.print("\t");
-  Serial.print(IMU.getGyroZ_rads(), 6);
+  Serial.print(IMU.getGyroZ_rads(), 4);
   Serial.print("\n");
 
-  delay(10);
+  delay(38);
 }
 
 // void loop()
