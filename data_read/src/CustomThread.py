@@ -2,21 +2,27 @@ import threading
 import time
 import numpy as np
 from DTWGestureRecognizer import DTWGestureRecognizer
+from Utils import *
 
 
 class PredictionThread(threading.Thread):
     def predict_gesture(self):
         try:
-            sample = np.array(DTWGestureRecognizer.shared().active_data)
-            # print(sample)
-            DTWGestureRecognizer.shared().predict(sample)
+            data = np.array(DTWGestureRecognizer.shared().active_data)
+            cropped = crop_active_gesture(data)
+            if len(cropped) > 10:
+                smoothed = smooth_data(cropped)
+                sample = np.array(smoothed)
+                prediction = DTWGestureRecognizer.shared().predict(sample)
+                if prediction is not None:
+                    print("Active Gesture Founded: Label: ", prediction)
         except Exception as ex:
-            print(ex)
+            pass
 
     def run(self):
         while True:
             self.predict_gesture()
-            time.sleep(0.033)
+            time.sleep(0.1)
 
 
 class ClassificationSampleThread(threading.Thread):

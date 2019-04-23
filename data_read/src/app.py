@@ -42,7 +42,8 @@ def main():
                         xonxoff=False,
                         rtscts=False,
                         dsrdtr=False)
-    ser.flush()
+    ser.close()
+    ser.open()
     print('Opening', ser.name)
 
     # Initialize a window for application GUI

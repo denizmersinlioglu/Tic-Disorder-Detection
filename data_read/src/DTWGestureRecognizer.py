@@ -1,6 +1,6 @@
 import os
 import GRT
-
+from Utils import *
 DATA_DIMENSION = 6
 
 
@@ -43,9 +43,10 @@ class DTWGestureRecognizer:
             if result:
                 label = self.pipeline.getPredictedClassLabel()
                 if label != -1:
-                    print(label)
+                    return label
             else:
                 print("prediction failed")
+                return None
         else:
             return None
 
@@ -61,28 +62,13 @@ class DTWGestureRecognizer:
         Returns:
             bool: The return value. True for success, False otherwise.
         '''
-        result = self.pipeline.classificationData.addSample(key, sample)
+        smoothed = smooth_data(sample)
+        result = self.pipeline.classificationData.addSample(key, smoothed)
         print("STATS :", self.pipeline.classificationData.getStatsAsString())
         self.save_classification_data()
         self.save_pipeline()
         self.pipeline.train(self.pipeline.classificationData)
         return result
-
-    def train_pipeline(self):
-        # self.pipeline.trainingData = self.pipeline.classificationData.split(80)
-        train_success = self.pipeline.train(self.pipeline.classificationData)
-
-        # print("STATS :", self.pipeline.classificationData.getStatsAsString())
-        # test_results = self.pipeline.getTestResults()
-
-        # print("Pipeline Test Accuracy: ", self.pipeline.getTestAccuracy())
-        # class_labels = self.pipeline.getClassLabels()
-
-        # print("Precision: ")
-        # for element in range(self.pipeline.getNumClassesInModel()):
-        #     print("\t", self.pipeline.getTestPrecision(class_labels[element]))
-
-        return train_success
 
     def save_pipeline(self):
         '''

@@ -25,11 +25,14 @@ class SerialPlot(pg.GraphicsWindow):
         plot4 = plot.plot(pen=pg.mkPen((188, 189, 34), width=3), name="GyroY")
         plot5 = plot.plot(pen=pg.mkPen((140, 86, 75), width=3), name="GyroZ")
 
+        self.suffix_len = int(max_len / 5)
+        self.suffix = deque([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]] * self.suffix_len)
         self.plots = [plot0, plot1, plot2, plot3, plot4, plot5]
         self.current_data = [deque([0.0] * max_len) for _ in range(6)]
 
-    def addToBuf(self, buf, val):
-        if len(buf) < self.max_len:
+    def addToBuf(self, buf, val, given_len):
+        max_len = given_len if given_len is not None else self.max_len
+        if len(buf) < max_len:
             buf.append(val)
         else:
             buf.popleft()
@@ -47,15 +50,15 @@ class SerialPlot(pg.GraphicsWindow):
             line = str(self.serial.readline(), 'utf-8').split("\t")
             data = [float(i) for i in line]
 
+            self.addToBuf(self.suffix, data, self.suffix_len)
+            DTWGestureRecognizer.shared().active_data = self.suffix
+
             if RecordHelper.shared().is_recording:
                 RecordHelper.shared().recording_buffer.append(data)
-                DTWGestureRecognizer.shared().active_data = None
-            else:
-                DTWGestureRecognizer.shared().active_data = data
 
             for element in zip(self.current_data, data, self.plots):
                 (buffer, datum, plot) = element
-                self.addToBuf(buffer, datum)
+                self.addToBuf(buffer, datum, self.max_len)
                 plot.setData(buffer)
 
             self.app.processEvents()
